@@ -1,0 +1,7 @@
+**/*.tfstate*
+**/*.lock.hcl
+**/.terraform
+**/*.env*
+**/keys/*
+**/*.tfplan
+**/*.plan
