@@ -1,0 +1,3 @@
+[submodule "terraform-acme-msftcerts"]
+	path = terraform-acme-msftcerts
+	url = https://github.com/jacobnosal/terraform-acme-msftcerts.git
