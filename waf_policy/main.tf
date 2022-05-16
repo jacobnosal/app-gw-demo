@@ -25,12 +25,12 @@ resource "azurerm_web_application_firewall_policy" "app-a" {
     match_conditions {
       match_variables {
         variable_name = "RequestHeaders"
-        selector      = "UserAgent"
+        selector      = "X-CUSTOM-HEADER"
       }
 
       operator           = "Contains"
       negation_condition = false
-      match_values       = ["Windows"]
+      match_values       = ["something-suspicious"]
     }
 
     action = "Block"

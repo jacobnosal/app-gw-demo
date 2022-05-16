@@ -185,7 +185,6 @@ resource "azurerm_application_gateway" "network" {
     port                  = 443
     protocol              = "Https"
     request_timeout       = 1
-    host_name             = var.dns_name
   }
 
   http_listener {
@@ -205,7 +204,7 @@ resource "azurerm_application_gateway" "network" {
     # trusted_client_certificate_names = ""
     verify_client_cert_issuer_dn = false
     ssl_policy {
-      disabled_protocols   = ["TLSv1_0", "TLSv1_1", "TLSv1_2"]
+      disabled_protocols   = ["TLSv1_0", "TLSv1_1"]
       min_protocol_version = "TLSv1_2"
     }
   }
@@ -278,21 +277,22 @@ resource "azurerm_application_gateway" "network" {
   tags = var.tags
 }
 
-resource "null_resource" "trsuted_root_cert" {
-  triggers = {
-    app_gw_id = azurerm_application_gateway.network.id
-  }
+# This doesn't behave correctly. Moving it to an install script.
+# resource "null_resource" "trusted_root_cert" {
+#   # triggers = {
+#   #   app_gw_id = azurerm_application_gateway.network.id
+#   # }
 
-  provisioner "local-exec" {
-    command = <<EOF
-      az network application-gateway root-cert create \
-        --cert-file keys/${var.dns_name}.trusted_root_cert.cer  \
-        --gateway-name ${azurerm_application_gateway.network.name}  \
-        --name ${var.dns_name}-trusted-root-cert \
-        --resource-group ${azurerm_resource_group.rg.name}
-    EOF
-  }
-}
+#   provisioner "local-exec" {
+#     command = <<EOF
+#       az network application-gateway root-cert create \
+#         --cert-file keys/${var.dns_name}.trusted_root_cert.cer  \
+#         --gateway-name ${azurerm_application_gateway.network.name}  \
+#         --name ${var.dns_name}-trusted-root-cert \
+#         --resource-group ${azurerm_resource_group.rg.name}
+#     EOF
+#   }
+# }
 
 ###########################################################
 # AKS Configuration
@@ -337,4 +337,92 @@ resource "azurerm_kubernetes_cluster" "k8s" {
   role_based_access_control_enabled = var.aks_enable_rbac
 
   tags = var.tags
+}
+
+###########################################################
+# Log and Metric Configuration
+###########################################################
+resource "random_pet" "log-analytics-name" {
+  separator = ""
+  length    = 10
+}
+
+resource "azurerm_log_analytics_workspace" "app-gw-demo" {
+  name                = substr(random_pet.log-analytics-name.id, 0, 63)
+  location            = azurerm_resource_group.rg.location
+  resource_group_name = azurerm_resource_group.rg.name
+  sku                 = "PerGB2018"
+  retention_in_days   = 30
+}
+
+# app gateway
+resource "azurerm_monitor_diagnostic_setting" "example" {
+  name                       = "app-gw-diag-settings-${azurerm_application_gateway.network.name}"
+  target_resource_id         = azurerm_application_gateway.network.id
+  log_analytics_workspace_id = azurerm_log_analytics_workspace.app-gw-demo.id
+
+  log {
+    category = "ApplicationGatewayAccessLog"
+
+    retention_policy {
+      enabled = true
+      days    = 30
+    }
+  }
+
+  log {
+    category = "ApplicationGatewayPerformanceLog"
+
+    retention_policy {
+      enabled = true
+      days    = 30
+    }
+  }
+
+  log {
+    category = "ApplicationGatewayFirewallLog"
+
+    retention_policy {
+      enabled = true
+      days    = 30
+    }
+  }
+
+  metric {
+    category = "AllMetrics"
+
+    retention_policy {
+      enabled = true
+      days    = 30
+    }
+  }
+}
+
+# k8s cluster
+resource "azurerm_monitor_diagnostic_setting" "k8s" {
+  name                       = "k8s-diag-settings-${azurerm_kubernetes_cluster.k8s.name}"
+  target_resource_id         = azurerm_kubernetes_cluster.k8s.id
+  log_analytics_workspace_id = azurerm_log_analytics_workspace.app-gw-demo.id
+
+  dynamic "log" {
+    for_each = toset(var.k8s_log_categories)
+    iterator = category
+    content {
+      category = category.value
+
+      retention_policy {
+        enabled = true
+        days    = 30
+      }
+    }
+  }
+
+  metric {
+    category = "AllMetrics"
+
+    retention_policy {
+      enabled = true
+      days    = 30
+    }
+  }
 }

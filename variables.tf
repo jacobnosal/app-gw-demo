@@ -151,3 +151,19 @@ variable "app_gateway_tier" {
   description = "Tier of the Application Gateway tier"
   default     = "WAF_v2"
 }
+
+variable "k8s_log_categories" {
+  default = [
+    "kube-apiserver",
+    "kube-audit",
+    "kube-audit-admin",
+    "kube-controller-manager",
+    "kube-scheduler",
+    "cluster-autoscaler",
+    "cloud-controller-manager",
+    "guard",
+    "csi-azuredisk-controller",
+    "csi-azurefile-controller",
+    "csi-snapshot-controller"
+  ]
+}
