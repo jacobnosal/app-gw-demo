@@ -9,6 +9,12 @@ build:
 	terraform plan -out main.tfplan; \
 	terraform apply main.tfplan
 
+install-agic:
+	set -o errexit; \
+	cd agic; \
+	./install.sh; \
+	cd ..
+
 destroy:
 	set -o errexit; \
 	terraform plan -destroy -out main.destroy.tfplan; \
