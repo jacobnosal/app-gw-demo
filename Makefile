@@ -9,10 +9,18 @@ build:
 	terraform plan -out main.tfplan; \
 	terraform apply main.tfplan
 
-install-agic:
+.PHONY: agic
+agic:
 	set -o errexit; \
 	cd agic; \
 	./install.sh; \
+	cd ..
+
+.phony: app-a
+app-a:
+	set -o errexit; \
+	cd app; \
+	kubectl apply -f app-a.yaml; \
 	cd ..
 
 destroy:
