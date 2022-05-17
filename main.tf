@@ -13,7 +13,7 @@ locals {
 }
 
 module "msftcerts" {
-  source = "github.com/jacobnosal/terraform-acme-msftcerts.git?ref=v0.0.1"
+  source = "github.com/jacobnosal/terraform-acme-msftcerts.git?ref=v0.0.2"
 
   registration_email    = var.registration_email
   dns_name              = var.dns_name
