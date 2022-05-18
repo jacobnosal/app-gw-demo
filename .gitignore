@@ -6,3 +6,5 @@
 **/*.tfplan
 **/*.plan
 **/.vscode
+agic/clusterissuer.yaml
+agic/values.yaml

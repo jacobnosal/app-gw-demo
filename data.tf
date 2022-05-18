@@ -1,9 +1,9 @@
 data "azurerm_client_config" "current" {}
 
-data "azurerm_key_vault" "kv" {
-  name                = azurerm_key_vault.kv.name
-  resource_group_name = azurerm_key_vault.kv.resource_group_name
-}
+# data "azurerm_key_vault" "kv" {
+#   name                = azurerm_key_vault.kv.name
+#   resource_group_name = azurerm_key_vault.kv.resource_group_name
+# }
 
 data "azurerm_subnet" "kubesubnet" {
   name                 = var.aks_subnet_name
