@@ -24,6 +24,14 @@ apps:
 	kubectl apply -f app-b.yaml; \
 	cd ..
 
+.phony: delete-apps
+delete-apps:
+	set -o errexit; \
+	cd app; \
+	kubectl delete -f app-a.yaml; \
+	kubectl delete -f app-b.yaml; \
+	cd ..
+
 destroy:
 	set -o errexit; \
 	terraform plan -destroy -out main.destroy.tfplan; \
