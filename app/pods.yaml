@@ -1,0 +1,58 @@
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: app-a-pod
+  labels:
+    app: app-a
+spec:
+  volumes:
+  - name: tls-certs
+    secret:
+      secretName: api.jacobnosal.com-tls
+  containers:
+  - image: jacobnosal/echo:v0.0.1
+    name: request-echo
+    env:
+    - name: PRIVATE_KEY_FILE
+      value: /var/echo/tls.key
+    - name: FULLCHAIN_PEM_FILE
+      value: /var/echo/tls.crt
+    volumeMounts:
+    - mountPath: /var/echo
+      name: tls-certs
+      readOnly: true
+    ports:
+    - containerPort: 8080
+      protocol: TCP
+    - containerPort: 8443
+      protocol: TCP
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: app-b-pod
+  labels:
+    app: app-b
+spec:
+  volumes:
+  - name: tls-certs
+    secret:
+      secretName: api.jacobnosal.com-tls
+  containers:
+  - image: jacobnosal/echo:v0.0.1
+    name: request-echo
+    env:
+    - name: PRIVATE_KEY_FILE
+      value: /var/echo/tls.key
+    - name: FULLCHAIN_PEM_FILE
+      value: /var/echo/tls.crt
+    volumeMounts:
+    - mountPath: /var/echo
+      name: tls-certs
+      readOnly: true
+    ports:
+    - containerPort: 8080
+      protocol: TCP
+    - containerPort: 8443
+      protocol: TCP

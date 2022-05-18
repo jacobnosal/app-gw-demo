@@ -16,20 +16,26 @@ agic:
 	./install.sh; \
 	cd ..
 
-.phony: apps
-apps:
+.phony: services
+services:
 	set -o errexit; \
 	cd app; \
-	kubectl apply -f app-a.yaml; \
-	kubectl apply -f app-b.yaml; \
+	kubectl apply -f services.yaml; \
+	cd ..
+
+.phony: pods
+pods:
+	set -o errexit; \
+	cd app; \
+	kubectl apply -f pods.yaml; \
 	cd ..
 
 .phony: delete-apps
 delete-apps:
 	set -o errexit; \
 	cd app; \
-	kubectl delete -f app-a.yaml; \
-	kubectl delete -f app-b.yaml; \
+	kubectl delete -f pods.yaml; \
+	kubectl delete -f services.yaml; \
 	cd ..
 
 destroy:
