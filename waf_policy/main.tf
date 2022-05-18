@@ -81,6 +81,8 @@ resource "azurerm_web_application_firewall_policy" "app-b" {
 
     action = "Block"
   }
+  
+  # TODO: Add custom_rule to block some paths.
 
   policy_settings {
     enabled                     = true

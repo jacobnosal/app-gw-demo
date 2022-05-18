@@ -16,11 +16,12 @@ agic:
 	./install.sh; \
 	cd ..
 
-.phony: app-a
-app-a:
+.phony: apps
+apps:
 	set -o errexit; \
 	cd app; \
 	kubectl apply -f app-a.yaml; \
+	kubectl apply -f app-b.yaml; \
 	cd ..
 
 destroy:

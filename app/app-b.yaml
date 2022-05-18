@@ -1,10 +1,10 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: app-a-svc
+  name: app-b-svc
 spec:
   selector:
-    app: app-a
+    app: app-b
   ports:
   - name: http-port
     protocol: TCP
@@ -18,15 +18,15 @@ spec:
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: app-a-ingress-https
+  name: app-b-ingress-https
   annotations:
     cert-manager.io/cluster-issuer: letsencrypt
     kubernetes.io/ingress.class: azure/application-gateway
     appgw.ingress.kubernetes.io/backend-protocol: https
-    appgw.ingress.kubernetes.io/rewrite-rule-set: app-a-rewrite-rule-set
+    appgw.ingress.kubernetes.io/rewrite-rule-set: app-b-rewrite-rule-set
     appgw.ingress.kubernetes.io/backend-hostname: api.jacobnosal.com
     appgw.ingress.kubernetes.io/ssl-redirect: "true"
-    appgw.ingress.kubernetes.io/waf-policy-for-path: /subscriptions/10dc01bb-c96d-47d3-b553-338943349427/resourceGroups/rg-waf-policies/providers/Microsoft.Network/applicationGatewayWebApplicationFirewallPolicies/app-a-waf-policy
+    appgw.ingress.kubernetes.io/waf-policy-for-path: /subscriptions/10dc01bb-c96d-47d3-b553-338943349427/resourceGroups/rg-waf-policies/providers/Microsoft.Network/applicationGatewayWebApplicationFirewallPolicies/app-b-waf-policy
     # https://azure.github.io/application-gateway-kubernetes-ingress/annotations/#appgw-trusted-root-certificate
     # appgw.ingress.kubernetes.io/appgw-trusted-root-certificate: api.jacobnosal.com-trusted-root-cert
 spec:
@@ -38,10 +38,10 @@ spec:
   - host: api.jacobnosal.com
     http:
       paths:
-      - path: /app-a
+      - path: /app-b
         backend:
           service:
-            name: app-a-svc
+            name: app-b-svc
             port:
               number: 8443
         pathType: Prefix
@@ -49,9 +49,9 @@ spec:
 apiVersion: v1
 kind: Pod
 metadata:
-  name: app-a-pod
+  name: app-b-pod
   labels:
-    app: app-a
+    app: app-b
 spec:
   volumes:
   - name: tls-certs

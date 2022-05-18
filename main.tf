@@ -237,6 +237,24 @@ resource "azurerm_application_gateway" "network" {
     }
   }
 
+  rewrite_rule_set {
+    name = "app-b-rewrite-rule-set"
+
+    rewrite_rule {
+      name          = "strip-base-path"
+      rule_sequence = "100"
+      url {
+        path = "/{var_uri_path_2}"
+      }
+      condition {
+        variable    = "var_uri_path"
+        pattern     = "/app-b(/|$)(.*)"
+        ignore_case = true
+        negate      = false
+      }
+    }
+  }
+
   # waf_configuration {
   #   enabled              = true
   #   firewall_mode        = "Prevention"

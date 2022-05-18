@@ -27,7 +27,16 @@ helm repo add jetstack https://charts.jetstack.io
 helm repo update
 helm install cert-manager jetstack/cert-manager --version v1.5.4 --set installCRDs=true 
 
-# TODO: format cluster issuer
+cp clusterissuer.template.yaml clusterissuer.yaml
+yq -i '.spec.acme.email = strenv(TF_VAR_registration_email)' clusterissuer.yaml
+yq -i '.spec.acme.solvers[0].dns01.azureDNS.subscriptionID = strenv(subscription_id)' clusterissuer.yaml
+yq -i '.spec.acme.solvers[0].dns01.azureDNS.tenantID = strenv(TF_VAR_azure_tenant_id)' clusterissuer.yaml
+yq -i '.spec.acme.solvers[0].dns01.azureDNS.resourceGroupName = strenv(TF_VAR_azure_resource_group)' clusterissuer.yaml
+yq -i '.spec.acme.solvers[0].dns01.azureDNS.hostedZoneName = strenv(TF_VAR_azure_zone_name)' clusterissuer.yaml
+yq -i '.spec.acme.solvers[0].dns01.azureDNS.clientID = strenv(TF_VAR_azure_client_id)' clusterissuer.yaml
+
+cat clusterissuer.yaml
+
 kubectl create secret generic azuredns-config --from-literal=client-secret=$TF_VAR_azure_client_secret
 kubectl apply -f clusterissuer.yaml
 
