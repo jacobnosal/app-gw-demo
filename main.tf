@@ -12,19 +12,6 @@ locals {
   app_gateway_subnet_name        = "appgwsubnet"
 }
 
-# module "msftcerts" {
-#   source = "github.com/jacobnosal/terraform-acme-msftcerts.git?ref=v0.0.2"
-
-#   registration_email    = var.registration_email
-#   dns_name              = var.dns_name
-#   azure_client_id       = var.azure_client_id
-#   azure_client_secret   = var.azure_client_secret
-#   azure_resource_group  = var.azure_resource_group
-#   azure_subscription_id = var.azure_subscription_id
-#   azure_tenant_id       = var.azure_tenant_id
-#   azure_zone_name       = var.azure_zone_name
-# }
-
 module "waf-policies" {
   source = "./waf_policy"
 }
@@ -35,73 +22,6 @@ resource "azurerm_resource_group" "rg" {
 
   tags = var.tags
 }
-
-###########################################################
-# KeyVault Configuration
-###########################################################
-# resource "random_pet" "kv-name" {
-#   prefix    = "kv"
-#   separator = ""
-#   length    = 3
-# }
-
-# resource "azurerm_key_vault" "kv" {
-#   name                = substr(random_pet.kv-name.id, 0, 24)
-#   location            = azurerm_resource_group.rg.location
-#   resource_group_name = azurerm_resource_group.rg.name
-#   tenant_id           = data.azurerm_client_config.current.tenant_id
-#   sku_name            = "premium"
-
-#   access_policy {
-#     tenant_id = data.azurerm_client_config.current.tenant_id
-#     object_id = data.azurerm_client_config.current.object_id
-
-#     certificate_permissions = [
-#       "Create",
-#       "Delete",
-#       "Get",
-#       "Import",
-#       "List",
-#       "Update",
-#       "Purge"
-#     ]
-#   }
-
-#   access_policy {
-#     tenant_id = data.azurerm_client_config.current.tenant_id
-#     object_id = azurerm_user_assigned_identity.app-gw-id.principal_id
-
-#     certificate_permissions = ["Get", "Purge"]
-#     secret_permissions      = ["Get", "Purge"]
-#   }
-# }
-
-# resource "azurerm_key_vault_certificate" "api-jacobnosal-com-frontend-ssl" {
-#   name         = "api-jacobnosal-com-frontend-ssl"
-#   key_vault_id = azurerm_key_vault.kv.id
-
-#   certificate {
-#     contents = module.msftcerts.pfx
-#     password = module.msftcerts.pfx_password
-#   }
-
-#   certificate_policy {
-#     issuer_parameters {
-#       name = "Unknown"
-#     }
-
-#     key_properties {
-#       exportable = true
-#       key_size   = 2048
-#       key_type   = "RSA"
-#       reuse_key  = false
-#     }
-
-#     secret_properties {
-#       content_type = "application/x-pkcs12"
-#     }
-#   }
-# }
 
 ###########################################################
 # Network Configuration
@@ -255,44 +175,13 @@ resource "azurerm_application_gateway" "network" {
     }
   }
 
-  # waf_configuration {
-  #   enabled              = true
-  #   firewall_mode        = "Prevention"
-  #   rule_set_type        = "OWASP"
-  #   rule_set_version     = "3.2"
-  #   file_upload_limit_mb = 128
-  #   request_body_check   = true
-  # }
-
   identity {
     type         = "UserAssigned"
     identity_ids = [azurerm_user_assigned_identity.app-gw-id.id]
   }
 
-  # ssl_certificate {
-  #   name                = "api-jacobnosal-com-frontend-ssl"
-  #   key_vault_secret_id = azurerm_key_vault_certificate.api-jacobnosal-com-frontend-ssl.secret_id
-  # }
-
   tags = var.tags
 }
-
-# This doesn't behave correctly. Moving it to an install script.
-# resource "null_resource" "trusted_root_cert" {
-#   # triggers = {
-#   #   app_gw_id = azurerm_application_gateway.network.id
-#   # }
-
-#   provisioner "local-exec" {
-#     command = <<EOF
-#       az network application-gateway root-cert create \
-#         --cert-file keys/${var.dns_name}.trusted_root_cert.cer  \
-#         --gateway-name ${azurerm_application_gateway.network.name}  \
-#         --name ${var.dns_name}-trusted-root-cert \
-#         --resource-group ${azurerm_resource_group.rg.name}
-#     EOF
-#   }
-# }
 
 ###########################################################
 # AKS Configuration
@@ -338,91 +227,3 @@ resource "azurerm_kubernetes_cluster" "k8s" {
 
   tags = var.tags
 }
-
-# ###########################################################
-# # Log and Metric Configuration
-# ###########################################################
-# resource "random_pet" "log-analytics-name" {
-#   separator = ""
-#   length    = 10
-# }
-
-# resource "azurerm_log_analytics_workspace" "app-gw-demo" {
-#   name                = substr(random_pet.log-analytics-name.id, 0, 63)
-#   location            = azurerm_resource_group.rg.location
-#   resource_group_name = azurerm_resource_group.rg.name
-#   sku                 = "PerGB2018"
-#   retention_in_days   = 30
-# }
-
-# # app gateway
-# resource "azurerm_monitor_diagnostic_setting" "example" {
-#   name                       = "app-gw-diag-settings-${azurerm_application_gateway.network.name}"
-#   target_resource_id         = azurerm_application_gateway.network.id
-#   log_analytics_workspace_id = azurerm_log_analytics_workspace.app-gw-demo.id
-
-#   log {
-#     category = "ApplicationGatewayAccessLog"
-
-#     retention_policy {
-#       enabled = true
-#       days    = 30
-#     }
-#   }
-
-#   log {
-#     category = "ApplicationGatewayPerformanceLog"
-
-#     retention_policy {
-#       enabled = true
-#       days    = 30
-#     }
-#   }
-
-#   log {
-#     category = "ApplicationGatewayFirewallLog"
-
-#     retention_policy {
-#       enabled = true
-#       days    = 30
-#     }
-#   }
-
-#   metric {
-#     category = "AllMetrics"
-
-#     retention_policy {
-#       enabled = true
-#       days    = 30
-#     }
-#   }
-# }
-
-# # k8s cluster
-# resource "azurerm_monitor_diagnostic_setting" "k8s" {
-#   name                       = "k8s-diag-settings-${azurerm_kubernetes_cluster.k8s.name}"
-#   target_resource_id         = azurerm_kubernetes_cluster.k8s.id
-#   log_analytics_workspace_id = azurerm_log_analytics_workspace.app-gw-demo.id
-
-#   dynamic "log" {
-#     for_each = toset(var.k8s_log_categories)
-#     iterator = category
-#     content {
-#       category = category.value
-
-#       retention_policy {
-#         enabled = true
-#         days    = 30
-#       }
-#     }
-#   }
-
-#   metric {
-#     category = "AllMetrics"
-
-#     retention_policy {
-#       enabled = true
-#       days    = 30
-#     }
-#   }
-# }
