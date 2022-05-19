@@ -15,21 +15,9 @@ This repository provides the primitives needed to provision the required infrast
 First, we need to format a `.env` file for some of our sensitive parameters. A template follows:
 
 
-<!-- TODO:  clean up this .env file. Some of these aren't sensitive (so they don't need to be in the .env file.) and should be provided as a default or .tfvars. Additionally, the agic/install.sh script needs to be verified as we may use the TF_VAR_* variable. Move these too outputs if needed.-->
 ```
-# This section holds configurations for the acme dns challenege
-TF_VAR_registration_email=<>
-TF_VAR_azure_client_id=<>
 TF_VAR_azure_client_secret=<>
-TF_VAR_azure_resource_group=<>
-TF_VAR_azure_subscription_id="<>
-TF_VAR_azure_tenant_id=<>
-TF_VAR_azure_zone_name=<>
-TF_VAR_dns_name=<>
-# This section holds confogurations for the AKS Service Principal
-TF_VAR_aks_service_principal_app_id=<>
 TF_VAR_aks_service_principal_client_secret=<>
-TF_VAR_aks_service_principal_object_id=<>
 ```
 
 Gather the appropriate parameters and build the file. You will need at least one service principal for this.
@@ -38,8 +26,19 @@ Gather the appropriate parameters and build the file. You will need at least one
 az ad sp create-for-rbac --name app-gw-sp --role Contributor --scopes /subscriptions/<subscription_id>
 ```
 
-<!-- TODO: You should provide a better explanation than this. Which variables from the output map to what variables in the env file? -->
-Record these values in your `.env` file.
+```bash
+az ad sp list --display-name app-gw-sp --query "[].{\"Object ID\":objectId}" --output table
+```
+
+Record these values in your `.env` file with the following mappings:
+- Set `TF_VAR_azure_client_secret` and `TF_VAR_aks_service_principal_client_secret` in `.env` to the password value returned.
+- Set `azure_client_id` and `aks_service_principal_app_id` in `demo.tfvars` to the appId field returned.
+- Set `azure_tenant_id` in `demo.tfvars` to the tenant field returned.
+- Set `aks_service_principal_object_id` to the returned Object ID field.
+- Set `azure_dns_resource_group` to the name of the esource group that holds the DNS Zone.
+- Set `azure_dns_zone_name` to the DNS Zone name.
+- Set `domain_name` to the domain contained in the DNS zone.
+- Set `registration_email` to a valid email. You will be contacted at this email before the certificate expires.
 
 We are now ready to build the Azure resources using Terraform.
 

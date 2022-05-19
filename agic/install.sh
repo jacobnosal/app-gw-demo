@@ -27,13 +27,19 @@ helm repo add jetstack https://charts.jetstack.io
 helm repo update
 helm install cert-manager jetstack/cert-manager --version v1.5.4 --set installCRDs=true 
 
+export registration_email=$(terraform output -raw -state="$root_dir/terraform.tfstate" registration_email)
+export tenant_id=$(terraform output -raw -state="$root_dir/terraform.tfstate" tenant_id)
+export dns_resource_group_name=$(terraform output -raw -state="$root_dir/terraform.tfstate" dns_resource_group_name)
+export dns_zone_name=$(terraform output -raw -state="$root_dir/terraform.tfstate" dns_zone_name)
+export client_id=$(terraform output -raw -state="$root_dir/terraform.tfstate" client_id)
+
 cp clusterissuer.template.yaml clusterissuer.yaml
-yq -i '.spec.acme.email = strenv(TF_VAR_registration_email)' clusterissuer.yaml
+yq -i '.spec.acme.email = strenv(registration_email)' clusterissuer.yaml
 yq -i '.spec.acme.solvers[0].dns01.azureDNS.subscriptionID = strenv(subscription_id)' clusterissuer.yaml
-yq -i '.spec.acme.solvers[0].dns01.azureDNS.tenantID = strenv(TF_VAR_azure_tenant_id)' clusterissuer.yaml
-yq -i '.spec.acme.solvers[0].dns01.azureDNS.resourceGroupName = strenv(TF_VAR_azure_resource_group)' clusterissuer.yaml
-yq -i '.spec.acme.solvers[0].dns01.azureDNS.hostedZoneName = strenv(TF_VAR_azure_zone_name)' clusterissuer.yaml
-yq -i '.spec.acme.solvers[0].dns01.azureDNS.clientID = strenv(TF_VAR_azure_client_id)' clusterissuer.yaml
+yq -i '.spec.acme.solvers[0].dns01.azureDNS.tenantID = strenv(tenant_id)' clusterissuer.yaml
+yq -i '.spec.acme.solvers[0].dns01.azureDNS.resourceGroupName = strenv(dns_resource_group_name)' clusterissuer.yaml
+yq -i '.spec.acme.solvers[0].dns01.azureDNS.hostedZoneName = strenv(dns_zone_name)' clusterissuer.yaml
+yq -i '.spec.acme.solvers[0].dns01.azureDNS.clientID = strenv(client_id)' clusterissuer.yaml
 
 cat clusterissuer.yaml
 
@@ -59,3 +65,8 @@ unset identity_client_id
 unset resource_group_name
 unset aks_cluster_name
 unset aks_cluster_rbac_enabled
+unset registration_email
+unset tenant_id
+unset dns_resource_group_name
+unset dns_zone_name
+unset client_id

@@ -68,3 +68,23 @@ output "application_domain_name" {
 output "application_gateway_name" {
   value = azurerm_application_gateway.network.name
 }
+
+output "registration_email" {
+  value = var.registration_email
+}
+
+output "tenant_id" {
+  value = var.azure_tenant_id
+}
+
+output "dns_resource_group_name" {
+  value = var.azure_dns_resource_group
+}
+
+output "dns_zone_name" {
+  value = var.azure_dns_zone_name
+}
+
+output "client_id" {
+  value = var.aks_service_principal_app_id
+}
