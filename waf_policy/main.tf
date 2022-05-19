@@ -18,7 +18,7 @@ resource "azurerm_web_application_firewall_policy" "app-a" {
   }
 
   custom_rules {
-    name      = "block_windows_user_agent"
+    name      = "block_custom_header"
     priority  = 1
     rule_type = "MatchRule"
 
@@ -64,25 +64,22 @@ resource "azurerm_web_application_firewall_policy" "app-b" {
   }
 
   custom_rules {
-    name      = "block_curl_user_agent"
+    name      = "block_some_pages"
     priority  = 1
     rule_type = "MatchRule"
 
     match_conditions {
       match_variables {
-        variable_name = "RequestHeaders"
-        selector      = "UserAgent"
+        variable_name = "RequestUri"
       }
 
       operator           = "Contains"
       negation_condition = false
-      match_values       = ["curl"]
+      match_values       = ["/blocked-page", "/blocked-pages/*"]
     }
 
     action = "Block"
   }
-  
-  # TODO: Add custom_rule to block some paths.
 
   policy_settings {
     enabled                     = true
