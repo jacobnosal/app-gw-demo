@@ -32,15 +32,6 @@ variable "tags" {
   }
 }
 
-variable "trusted_root_cert_file" {
-  description = "Path to .pfx trusteed root cert file."
-  default     = "~/api.jacobnosal.com.pfx"
-}
-
-variable "trusted_root_cert_file_password" {
-  description = "Paassword to .pfx trusteed root cert file."
-}
-
 variable "aks_service_principal_app_id" {
   description = "Application ID/Client ID  of the service principal. Used by AKS to manage AKS related resources on Azure like vms, subnets."
 }
@@ -150,20 +141,4 @@ variable "app_gateway_sku" {
 variable "app_gateway_tier" {
   description = "Tier of the Application Gateway tier"
   default     = "WAF_v2"
-}
-
-variable "k8s_log_categories" {
-  default = [
-    "kube-apiserver",
-    "kube-audit",
-    "kube-audit-admin",
-    "kube-controller-manager",
-    "kube-scheduler",
-    "cluster-autoscaler",
-    "cloud-controller-manager",
-    "guard",
-    "csi-azuredisk-controller",
-    "csi-azurefile-controller",
-    "csi-snapshot-controller"
-  ]
 }
