@@ -135,15 +135,10 @@ resource "azurerm_application_gateway" "network" {
     protocol                       = "Http"
   }
 
-  ssl_profile {
-    name = "api.jacobnosal.com-ssl-policy"
-    # This is for mutual authentication with clients.
-    # trusted_client_certificate_names = ""
-    verify_client_cert_issuer_dn = false
-    ssl_policy {
-      disabled_protocols   = ["TLSv1_0", "TLSv1_1"]
-      min_protocol_version = "TLSv1_2"
-    }
+  ssl_policy {
+    policy_type = "Custom"
+    min_protocol_version = "TLSv1_2"
+    disabled_protocols = ["TLSv1_0", "TLSv1_1"]
   }
 
   request_routing_rule {
