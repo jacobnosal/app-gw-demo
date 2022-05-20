@@ -52,16 +52,14 @@ resource "azurerm_public_ip" "pip" {
   resource_group_name = azurerm_resource_group.rg.name
   allocation_method   = "Static"
   sku                 = "Standard"
-  #   domain_name_label = ""
 
   tags = var.tags
 }
 
-# TODO: parameterize this
 resource "azurerm_dns_a_record" "api_jacobnosal_com" {
   name                = "api"
-  zone_name           = "jacobnosal.com"
-  resource_group_name = "jacobnosal.com-dns"
+  zone_name           = var.azure_dns_zone_name
+  resource_group_name = var.azure_dns_resource_group
   ttl                 = 300
   target_resource_id  = azurerm_public_ip.pip.id
 }
@@ -73,6 +71,29 @@ resource "azurerm_application_gateway" "network" {
   name                = var.app_gateway_name
   resource_group_name = azurerm_resource_group.rg.name
   location            = azurerm_resource_group.rg.location
+
+  # Terraform , by default, assumes that it is the sole management agent of the
+  # resources in this configuration. In this instance, we are deploying the
+  # Application Gateway Ingress Controller (AGIC) to the AKS cluster and AGIC
+  # creates and updates various subresources in App Gateway. Terraform will
+  # generate a plan to overwrite these and, if the plan is applied, all of the
+  # apps lose their ingress routing (and user connectivity!). We can configure
+  # the lifecycle argument of the app gateway resource to ignore chnages in the
+  # subresources that we expect AGIC to manage.
+  lifecycle {
+    ignore_changes = [
+      backend_address_pool,
+      backend_http_settings,
+      frontend_port,
+      http_listener,
+      probe,
+      redirect_configuration,
+      request_routing_rule,
+      ssl_certificate,
+      tags,
+      url_path_map,
+    ]
+  }
 
   sku {
     name     = var.app_gateway_sku
@@ -112,10 +133,6 @@ resource "azurerm_application_gateway" "network" {
     frontend_ip_configuration_name = local.frontend_ip_configuration_name
     frontend_port_name             = local.frontend_port_name
     protocol                       = "Http"
-    # host_name                      = "api.jacobnosal.com"
-    # ssl_certificate_name           = "api-jacobnosal-com-frontend-ssl"
-    # require_sni                    = true
-    # ssl_profile_name               = "api.jacobnosal.com-ssl-policy"
   }
 
   ssl_profile {
@@ -137,8 +154,6 @@ resource "azurerm_application_gateway" "network" {
     backend_http_settings_name = local.http_setting_name
   }
 
-  # rewrite rule sets need to be associated with a path map
-  # need to configure an https listener and figure the cert stuff (.pfx)
   rewrite_rule_set {
     name = "app-a-rewrite-rule-set"
 
