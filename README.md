@@ -93,12 +93,21 @@ Each Azure WAF Policy allows for the configuration of custom rules in addition a
 <!-- TODO: Add reason and discussion of custom WAF policies. -->
 | command | result | reason |
 |:---|---|---|
-|`curl -v https://api.jacobnosal.com/app-a`| :white_check_mark:|
-|`curl -v https://api.jacobnosal.com/app-b`| :white_check_mark:|
-|`curl -v https://api.jacobnosal.com/app-a -h "X-CUSTOM-HEADER: this-is-something-suspicious"`| :x: |
-|`curl -v https://api.jacobnosal.com/app-b/blocked-pages/aaa`| :x: |
-|`curl -v https://api.jacobnosal.com/app-b/blocked-pages/bbb`| :x: |
-|`curl -v https://api.jacobnosal.com/app-a --tlsv1.1`| :x: |
-|`curl -v https://api.jacobnosal.com/app-a --tlsv1.2`| :white_check_mark:|
-|`curl -v https://api.jacobnosal.com/app-b --tlsv1.2 --tls-max 1.2`| :white_check_mark: |
-|`curl -v https://api.jacobnosal.com/app-a --tlsv1.3`| :white_check_mark: |
+|`curl -v https://api.jacobnosal.com/app-a`| :white_check_mark:| |
+|`curl -v https://api.jacobnosal.com/app-b`| :white_check_mark:| |
+|`curl -v https://api.jacobnosal.com/app-a -h "X-CUSTOM-HEADER: this-is-something-suspicious"`| :x: | |
+|`curl -v https://api.jacobnosal.com/app-b/blocked-pages/aaa`| :x: | |
+|`curl -v https://api.jacobnosal.com/app-b/blocked-pages/bbb`| :x: | |
+|`curl -v https://api.jacobnosal.com/app-a --tlsv1.1`| :x: | |
+|`curl -v https://api.jacobnosal.com/app-a --tlsv1.2`| :white_check_mark: | |
+|`curl -v https://api.jacobnosal.com/app-b --tlsv1.2 --tls-max 1.2`| :white_check_mark: | |
+|`curl -v https://api.jacobnosal.com/app-a --tlsv1.3`| :white_check_mark: | |
+
+
+```mermaid
+  graph TD;
+      A-->B;
+      A-->C;
+      B-->D;
+      C-->D;
+```
