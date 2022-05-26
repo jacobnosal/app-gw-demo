@@ -136,9 +136,8 @@ resource "azurerm_application_gateway" "network" {
   }
 
   ssl_policy {
-    policy_type = "Custom"
-    min_protocol_version = "TLSv1_2"
-    disabled_protocols = ["TLSv1_0", "TLSv1_1"]
+    policy_type = "Predefined"
+    policy_name = "AppGwSslPolicy20220101S"
   }
 
   request_routing_rule {

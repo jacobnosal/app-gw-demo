@@ -25,7 +25,7 @@ az aks get-credentials --name $aks_cluster_name --resource-group $resource_group
 
 helm repo add jetstack https://charts.jetstack.io
 helm repo update
-helm install cert-manager jetstack/cert-manager --version v1.5.4 --set installCRDs=true 
+helm upgrade --install cert-manager jetstack/cert-manager --version v1.5.4 --set installCRDs=true 
 
 export registration_email=$(terraform output -raw -state="$root_dir/terraform.tfstate" registration_email)
 export tenant_id=$(terraform output -raw -state="$root_dir/terraform.tfstate" tenant_id)
@@ -56,7 +56,7 @@ az role assignment create --role "Managed Identity Operator" --assignee $identit
 
 helm repo add application-gateway-kubernetes-ingress https://appgwingress.blob.core.windows.net/ingress-azure-helm-package/
 helm repo update
-helm install -f values.yaml application-gateway-kubernetes-ingress/ingress-azure --generate-name
+helm upgrade --install -f values.yaml agic application-gateway-kubernetes-ingress/ingress-azure 
 
 unset subscription_id
 unset app_gateway_name

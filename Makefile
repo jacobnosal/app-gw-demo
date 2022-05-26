@@ -6,12 +6,12 @@ docs:
 
 build:
 	set -o errexit; set -o allexport; source .env; set +o allexport; \
-	terraform plan -out main.tfplan; \
+	terraform plan -out main.tfplan -var-file demo.tfvars; \
 	terraform apply main.tfplan
 
 .PHONY: agic
 agic:
-	set -o errexit; \
+	set -o errexit; set -o allexport; source .env; set +o allexport; \
 	cd agic; \
 	./install.sh; \
 	cd ..

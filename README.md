@@ -84,13 +84,13 @@ Annotations on the ingress resource apply a custom WAF policy to all paths conta
 ## SSL Policy
 
 
-The Application Gateway is configured with a default SSL Policy to all incoming requests. Application Gateway Ingress Controller does not support the conifguration of a per-ingress SSL Profile but Application Gateway does. This [issue](https://github.com/Azure/application-gateway-kubernetes-ingress/issues/773) tracks a feature parity request between App gateway and AGIC.
+The Application Gateway is configured with a default SSL Policy to all incoming requests. Application Gateway Ingress Controller does not support the conifguration of a per-ingress SSL Profile but Application Gateway does. This [issue](https://github.com/Azure/application-gateway-kubernetes-ingress/issues/773) tracks a feature parity request between App gateway and AGIC. Predefined policies are explained [here](https://docs.microsoft.com/en-us/azure/application-gateway/application-gateway-ssl-policy-overview).
+
 
 ```
 ssl_policy {
-    policy_type = "Custom"
-    min_protocol_version = "TLSv1_2"
-    disabled_protocols = ["TLSv1_0", "TLSv1_1"]
+    policy_type = "Predefined"
+    policy_name = "AppGwSslPolicy20220101S"
 }
 ```
 
@@ -109,13 +109,14 @@ Each Azure WAF Policy allows for the configuration of custom rules in addition a
 <!-- TODO: Add reason and discussion of custom WAF policies. -->
 | command | result | reason |
 |:---|---|---|
-|`curl -v https://api.jacobnosal.com/app-a`| :white_check_mark:| |
-|`curl -v https://api.jacobnosal.com/app-b`| :white_check_mark:| |
-|`curl -v https://api.jacobnosal.com/app-a -h "X-CUSTOM-HEADER: this-is-something-suspicious"`| :x: | |
-|`curl -v https://api.jacobnosal.com/app-b/blocked-pages/aaa`| :x: | |
-|`curl -v https://api.jacobnosal.com/app-b/blocked-pages/bbb`| :x: | |
-|`curl -v https://api.jacobnosal.com/app-a --tlsv1.1`| :x: | |
-|`curl -v https://api.jacobnosal.com/app-a --tlsv1.2`| :white_check_mark: | |
-|`curl -v https://api.jacobnosal.com/app-b --tlsv1.2 --tls-max 1.2`| :white_check_mark: | |
-|`curl -v https://api.jacobnosal.com/app-a --tlsv1.3`| :white_check_mark: | |
+|`curl -v https://api.jacobnosal.com/app-a`| :white_check_mark:| The request does not trigger a block due to headers |
+|`curl -v https://api.jacobnosal.com/app-b`| :white_check_mark:| The request does not trigger a block due to routes |
+|`curl -v https://api.jacobnosal.com/app-a -H "X-CUSTOM-HEADER: this-is-something-suspicious"`| :x: | The `app-a-waf-policy` matches `RequestHeaders/X-CUSTOM-HEADER` against `something-suspicious` with the `contains` operator |
+|`curl -v https://api.jacobnosal.com/app-b -H "X-CUSTOM-HEADER: this-is-something-suspicious"`| :x: | The `app-b-waf-policy` does not block this header value |
+|`curl -v https://api.jacobnosal.com/app-a/blocked-pages/aaa`| :white_check_mark: | The `app-a-waf-policy` does not block this route |
+|`curl -v https://api.jacobnosal.com/app-b/blocked-page`| :x: | The URL matches against the `/blocked-page` value with the `contains` operator|
+|`curl -v https://api.jacobnosal.com/app-b/blocked-pages/bbb`| :x: | The URL matches against the `/blocked-page` value with the `contains` operator |
+|`curl -v https://api.jacobnosal.com/app-a --tlsv1.1 --tls-max 1.1`| :x: | TLS v1.1 is not an allowed TLS version|
+|`curl -v https://api.jacobnosal.com/app-a --tlsv1.2 --tls-max 1.2`| :white_check_mark: | TLS v1.2 is allowed by SSL Policy |
+|`curl -v https://api.jacobnosal.com/app-a --tlsv1.3`| :white_check_mark: | TLS v1.3 is allowed by SSL Policy |
 
