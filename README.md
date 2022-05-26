@@ -75,9 +75,25 @@ Open your browser and verify that the endpoints work:
 
 # Environment Walkthrough
 
+
 The AKS cluster is hosting two applications: `app-a` and `app-b`. App Gateway exposes these using path based routing as `api.jacobnosal.com/{app-a,app-b}` and applies a rewrite rule set to forward traffic to the appropriate services and pods with the `/{app-a,app-b}` prefix removed.
 
 Annotations on the ingress resource apply a custom WAF policy to all paths contained in that resource. As path based routing implies each application is exposed under a prefix to the URL path, we can apply a custom WAF policy to each application. 
+
+
+## SSL Policy
+
+
+The Application Gateway is configured with a default SSL Policy to all incoming requests. Application Gateway Ingress Controller does not support the conifguration of a per-ingress SSL Profile but Application Gateway does. This [issue](https://github.com/Azure/application-gateway-kubernetes-ingress/issues/773) tracks a feature parity request between App gateway and AGIC.
+
+```
+ssl_policy {
+    policy_type = "Custom"
+    min_protocol_version = "TLSv1_2"
+    disabled_protocols = ["TLSv1_0", "TLSv1_1"]
+}
+```
+
 
 ## WAF Policies
 
@@ -103,11 +119,3 @@ Each Azure WAF Policy allows for the configuration of custom rules in addition a
 |`curl -v https://api.jacobnosal.com/app-b --tlsv1.2 --tls-max 1.2`| :white_check_mark: | |
 |`curl -v https://api.jacobnosal.com/app-a --tlsv1.3`| :white_check_mark: | |
 
-
-```mermaid
-  graph TD;
-      A-->B;
-      A-->C;
-      B-->D;
-      C-->D;
-```
