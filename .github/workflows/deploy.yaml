@@ -50,6 +50,7 @@ jobs:
         terraform apply -input=false -no-color tfplan
     
   agic:
+    needs: terraform
     runs-on: ubuntu-20.04
     env:
       ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
