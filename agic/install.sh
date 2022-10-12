@@ -3,16 +3,15 @@
 set -x
 set -o errexit
 
-root_dir=${PWD%/*}
-export subscription_id=$(terraform output -raw -state="$root_dir/terraform.tfstate" subscription_id)
-export app_gateway_name=$(terraform output -raw -state="$root_dir/terraform.tfstate" application_gateway_name)
-export identity_resource_id=$(terraform output -raw -state="$root_dir/terraform.tfstate" identity_resource_id)
-export identity_client_id=$(terraform output -raw -state="$root_dir/terraform.tfstate" identity_client_id)
-export resource_group_name=$(terraform output -raw -state="$root_dir/terraform.tfstate" resource_group_name)
-export aks_cluster_name=$(terraform output -raw -state="$root_dir/terraform.tfstate" cluster_name)
-export aks_cluster_rbac_enabled=$(terraform output -raw -state="$root_dir/terraform.tfstate" aks_rbac_enabled)
+export subscription_id=$(terraform output -raw subscription_id)
+export app_gateway_name=$(terraform output -raw application_gateway_name)
+export identity_resource_id=$(terraform output -raw identity_resource_id)
+export identity_client_id=$(terraform output -raw identity_client_id)
+export resource_group_name=$(terraform output -raw resource_group_name)
+export aks_cluster_name=$(terraform output -raw cluster_name)
+export aks_cluster_rbac_enabled=$(terraform output -raw aks_rbac_enabled)
 
-cp values.template.yaml values.yaml
+cp agic/values.template.yaml values.yaml
 yq -i '.appgw.subscriptionId = strenv(subscription_id)' values.yaml
 yq -i '.appgw.resourceGroup = strenv(resource_group_name)' values.yaml
 yq -i '.appgw.name = strenv(app_gateway_name)' values.yaml
@@ -27,13 +26,13 @@ helm repo add jetstack https://charts.jetstack.io
 helm repo update
 helm upgrade --install cert-manager jetstack/cert-manager --version v1.5.4 --set installCRDs=true 
 
-export registration_email=$(terraform output -raw -state="$root_dir/terraform.tfstate" registration_email)
-export tenant_id=$(terraform output -raw -state="$root_dir/terraform.tfstate" tenant_id)
-export dns_resource_group_name=$(terraform output -raw -state="$root_dir/terraform.tfstate" dns_resource_group_name)
-export dns_zone_name=$(terraform output -raw -state="$root_dir/terraform.tfstate" dns_zone_name)
-export client_id=$(terraform output -raw -state="$root_dir/terraform.tfstate" client_id)
+export registration_email=$(terraform output -raw registration_email)
+export tenant_id=$(terraform output -raw tenant_id)
+export dns_resource_group_name=$(terraform output -raw dns_resource_group_name)
+export dns_zone_name=$(terraform output -raw dns_zone_name)
+export client_id=$(terraform output -raw client_id)
 
-cp clusterissuer.template.yaml clusterissuer.yaml
+cp agic/clusterissuer.template.yaml clusterissuer.yaml
 yq -i '.spec.acme.email = strenv(registration_email)' clusterissuer.yaml
 yq -i '.spec.acme.solvers[0].dns01.azureDNS.subscriptionID = strenv(subscription_id)' clusterissuer.yaml
 yq -i '.spec.acme.solvers[0].dns01.azureDNS.tenantID = strenv(tenant_id)' clusterissuer.yaml
@@ -70,3 +69,6 @@ unset tenant_id
 unset dns_resource_group_name
 unset dns_zone_name
 unset client_id
+
+rm values.yaml
+rm clusterissuer.yaml

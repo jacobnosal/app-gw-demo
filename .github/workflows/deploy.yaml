@@ -89,6 +89,5 @@ jobs:
       run: |
         terraform output
     - name: Install Application Gateway Ingress Controller
-      working-directory: ./agic
       run: |
-        ./install.sh
+        ./agic/install.sh
