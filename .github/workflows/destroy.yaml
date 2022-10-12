@@ -1,0 +1,44 @@
+name: destroy
+on: [workflow_dispatch]
+jobs:
+  terraform:
+    runs-on: ubuntu-20.04
+    env:
+      ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+      ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+      ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+      ARM_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
+      TF_VAR_azure_subscription_id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+      TF_VAR_azure_tenant_id: ${{ secrets.AZURE_TENANT_ID }}
+      TF_VAR_azure_client_id: ${{ secrets.AZURE_CLIENT_ID }}
+      TF_VAR_azure_client_secret: ${{ secrets.AZURE_CLIENT_SECRET }}
+      TF_VAR_azure_dns_resource_group: ${{ secrets.AZURE_DNS_RESOURCE_GROUP }}
+      TF_VAR_azure_dns_zone_name: ${{ secrets.AZURE_DNS_ZONE_NAME }}
+      TF_VAR_domain_name: ${{ secrets.DOMAIN_NAME }}
+      TF_VAR_registration_email: ${{ secrets.REGISTRATION_EMAIL }}
+      TF_VAR_aks_service_principal_app_id: ${{ secrets.AKS_SERVICE_PRINCIPAL_APP_ID }}
+      TF_VAR_aks_service_principal_object_id: ${{ secrets.AKS_SERVICE_PRINCIPAL_OBJECT_ID }}
+      TF_VAR_aks_service_principal_client_secret: ${{ secrets.AKS_SERVICE_PRINCIPAL_CLIENT_SECRET }}
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+    - uses: Azure/login@v1
+      with:
+        creds: '{"clientId":"${{ secrets.AZURE_CLIENT_ID }}","clientSecret":"${{ secrets.AZURE_CLIENT_SECRET }}","subscriptionId":"${{ secrets.AZURE_SUBSCRIPTION_ID }}","tenantId":"${{ secrets.AZURE_TENANT_ID }}"}'
+    - name: Setup Terraform
+      uses: hashicorp/setup-terraform@v2.0.0
+      with:
+        terraform_version: 1.2.7
+    - name: Init Terraform Configuration
+      run: |
+        terraform init
+    - name: Validate Terraform Configuration
+      run: |
+        terraform validate
+    - name: Generate Terraform Plan
+      run: |
+        terraform plan -destroy -var-file demo.tfvars -input=false -no-color -out=destroy.tfplan \
+        && terraform show -no-color destroy.tfplan
+    - name: Apply Terraform Plan
+      run: |
+        terraform apply -input=false -no-color destroy.tfplantfplan
