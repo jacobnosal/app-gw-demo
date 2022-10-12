@@ -204,13 +204,13 @@ resource "azurerm_kubernetes_cluster" "k8s" {
 
   http_application_routing_enabled = false
 
-  linux_profile {
-    admin_username = var.vm_user_name
+  # linux_profile {
+  #   admin_username = var.vm_user_name
 
-    ssh_key {
-      key_data = file(var.public_ssh_key_path)
-    }
-  }
+  #   ssh_key {
+  #     key_data = file(var.public_ssh_key_path)
+  #   }
+  # }
 
   default_node_pool {
     name            = "agentpool"
