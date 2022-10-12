@@ -6,5 +6,11 @@ terraform {
     }
   }
 
+  backend "s3" {
+    bucket = "tfstate-jnosal"
+    key    = "app-gw-demo/terraform.tfstate"
+    region = "us-west-2"
+  }
+
   required_version = ">= 0.14"
 }
