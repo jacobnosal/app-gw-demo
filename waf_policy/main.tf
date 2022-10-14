@@ -2,14 +2,20 @@ provider "azurerm" {
   features {}
 }
 
+module "naming" {
+  source  = "Azure/naming/azurerm"
+  suffix = [ "demo" ]
+  prefix = [ "waf" ]
+}
+
 resource "azurerm_resource_group" "rg" {
-  name     = var.resource_group_name
+  name     = module.naming.resource_group.name
   location = var.location
 }
 
 # waf policy for route /app-a
 resource "azurerm_web_application_firewall_policy" "app-a" {
-  name                = "app-a-waf-policy"
+  name                = "waf-policy-demo-app-a"
   resource_group_name = azurerm_resource_group.rg.name
   location            = azurerm_resource_group.rg.location
 
@@ -55,7 +61,7 @@ resource "azurerm_web_application_firewall_policy" "app-a" {
 
 # waf policy for route /app-b
 resource "azurerm_web_application_firewall_policy" "app-b" {
-  name                = "app-b-waf-policy"
+  name                = "waf-policy-demo-app-b"
   resource_group_name = azurerm_resource_group.rg.name
   location            = azurerm_resource_group.rg.location
 
