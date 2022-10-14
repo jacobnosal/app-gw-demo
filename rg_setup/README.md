@@ -10,7 +10,7 @@
 
 | Name | Version |
 |------|---------|
-| <a name="provider_azurerm"></a> [azurerm](#provider\_azurerm) | >= 3.4.0 |
+| <a name="provider_azurerm"></a> [azurerm](#provider\_azurerm) | 3.27.0 |
 
 ## Modules
 
@@ -43,13 +43,9 @@ No modules.
 
 | Name | Description |
 |------|-------------|
-| <a name="output_aks_rbac_enabled"></a> [aks\_rbac\_enabled](#output\_aks\_rbac\_enabled) | n/a |
 | <a name="output_client_id"></a> [client\_id](#output\_client\_id) | n/a |
-| <a name="output_dns_resource_group_name"></a> [dns\_resource\_group\_name](#output\_dns\_resource\_group\_name) | n/a |
-| <a name="output_dns_zone_name"></a> [dns\_zone\_name](#output\_dns\_zone\_name) | n/a |
 | <a name="output_identity_client_id"></a> [identity\_client\_id](#output\_identity\_client\_id) | n/a |
 | <a name="output_identity_resource_id"></a> [identity\_resource\_id](#output\_identity\_resource\_id) | n/a |
 | <a name="output_resource_group_name"></a> [resource\_group\_name](#output\_resource\_group\_name) | n/a |
 | <a name="output_subscription_id"></a> [subscription\_id](#output\_subscription\_id) | n/a |
-| <a name="output_tenant_id"></a> [tenant\_id](#output\_tenant\_id) | n/a |
 <!-- END_TF_DOCS -->
