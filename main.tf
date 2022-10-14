@@ -16,11 +16,16 @@ module "waf-policies" {
   source = "./waf_policy"
 }
 
+module "naming" {
+  source  = "Azure/naming/azurerm"
+  suffix = [ "demo" ]
+}
+
 ###########################################################
 # Network Configuration
 ###########################################################
 resource "azurerm_virtual_network" "test" {
-  name                = var.virtual_network_name
+  name                = module.naming.virtual_network.name
   location            = data.azurerm_resource_group.rg.location
   resource_group_name = data.azurerm_resource_group.rg.name
   address_space       = [var.virtual_network_address_prefix]
@@ -40,7 +45,7 @@ resource "azurerm_virtual_network" "test" {
 
 # Public Ip 
 resource "azurerm_public_ip" "pip" {
-  name                = "publicIp1"
+  name                = module.naming.public_ip.name
   location            = data.azurerm_resource_group.rg.location
   resource_group_name = data.azurerm_resource_group.rg.name
   allocation_method   = "Static"
@@ -61,7 +66,7 @@ resource "azurerm_dns_a_record" "api_jacobnosal_com" {
 # Application Gateway Configuration
 ###########################################################
 resource "azurerm_application_gateway" "network" {
-  name                = var.app_gateway_name
+  name                = module.naming.application_gateway.name
   resource_group_name = data.azurerm_resource_group.rg.name
   location            = data.azurerm_resource_group.rg.location
 
@@ -139,6 +144,7 @@ resource "azurerm_application_gateway" "network" {
     http_listener_name         = local.listener_name
     backend_address_pool_name  = local.backend_address_pool_name
     backend_http_settings_name = local.http_setting_name
+    priority                   = 1
   }
 
   rewrite_rule_set {
@@ -189,7 +195,7 @@ resource "azurerm_application_gateway" "network" {
 # AKS Configuration
 ###########################################################
 resource "azurerm_kubernetes_cluster" "k8s" {
-  name       = var.aks_name
+  name       = module.naming.kubernetes_cluster.name
   location   = data.azurerm_resource_group.rg.location
   dns_prefix = var.aks_dns_prefix
 
