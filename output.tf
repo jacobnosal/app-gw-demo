@@ -80,3 +80,11 @@ output "dns_zone_name" {
 output "client_id" {
   value = var.aks_service_principal_app_id
 }
+
+output "app_a_waf_policy_resource_id" {
+  value = module.waf-policies.app_a_waf_policy_id
+}
+
+output "app_b_waf_policy_resource_id" {
+  value = module.waf-policies.app_b_waf_policy_id
+}
