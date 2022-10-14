@@ -2,10 +2,6 @@ variable "location" {
   default = "eastus"
 }
 
-variable "resource_group_name" {
-  default = "rg-app-gw-demo"
-}
-
 variable "tags" {
   default = {
     environment = "demo"
