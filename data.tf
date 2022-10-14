@@ -16,7 +16,6 @@ data "azurerm_subnet" "appgwsubnet" {
 
 data "azurerm_resource_group" "rg" {
   name     = var.resource_group_name
-  location = var.location
 }
 
 # User Assigned Identities 
