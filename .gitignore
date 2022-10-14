@@ -3,7 +3,7 @@
 **/.terraform
 **/*.env*
 **/keys/*
-**/*.tfplan
+**/*tfplan
 **/*.plan
 **/.vscode
 agic/clusterissuer.yaml
