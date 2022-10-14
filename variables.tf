@@ -44,6 +44,11 @@ variable "aks_service_principal_object_id" {
   description = "Object ID of the service principal."
 }
 
+variable "managed_identity_name" {
+  description = "Name of the managed identity."
+  default     = "ApplicationGatewayIdentity"
+}
+
 variable "virtual_network_name" {
   description = "Virtual network name"
   default     = "aksVirtualNetwork"

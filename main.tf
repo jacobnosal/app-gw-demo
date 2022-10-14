@@ -16,20 +16,13 @@ module "waf-policies" {
   source = "./waf_policy"
 }
 
-resource "azurerm_resource_group" "rg" {
-  name     = var.resource_group_name
-  location = var.location
-
-  tags = var.tags
-}
-
 ###########################################################
 # Network Configuration
 ###########################################################
 resource "azurerm_virtual_network" "test" {
   name                = var.virtual_network_name
-  location            = azurerm_resource_group.rg.location
-  resource_group_name = azurerm_resource_group.rg.name
+  location            = data.azurerm_resource_group.rg.location
+  resource_group_name = data.azurerm_resource_group.rg.name
   address_space       = [var.virtual_network_address_prefix]
 
   subnet {
@@ -48,8 +41,8 @@ resource "azurerm_virtual_network" "test" {
 # Public Ip 
 resource "azurerm_public_ip" "pip" {
   name                = "publicIp1"
-  location            = azurerm_resource_group.rg.location
-  resource_group_name = azurerm_resource_group.rg.name
+  location            = data.azurerm_resource_group.rg.location
+  resource_group_name = data.azurerm_resource_group.rg.name
   allocation_method   = "Static"
   sku                 = "Standard"
 
@@ -69,8 +62,8 @@ resource "azurerm_dns_a_record" "api_jacobnosal_com" {
 ###########################################################
 resource "azurerm_application_gateway" "network" {
   name                = var.app_gateway_name
-  resource_group_name = azurerm_resource_group.rg.name
-  location            = azurerm_resource_group.rg.location
+  resource_group_name = data.azurerm_resource_group.rg.name
+  location            = data.azurerm_resource_group.rg.location
 
   # Terraform , by default, assumes that it is the sole management agent of the
   # resources in this configuration. In this instance, we are deploying the
@@ -197,10 +190,10 @@ resource "azurerm_application_gateway" "network" {
 ###########################################################
 resource "azurerm_kubernetes_cluster" "k8s" {
   name       = var.aks_name
-  location   = azurerm_resource_group.rg.location
+  location   = data.azurerm_resource_group.rg.location
   dns_prefix = var.aks_dns_prefix
 
-  resource_group_name = azurerm_resource_group.rg.name
+  resource_group_name = data.azurerm_resource_group.rg.name
 
   http_application_routing_enabled = false
 

@@ -7,7 +7,7 @@ output "subscription_id" {
 }
 
 output "resource_group_name" {
-  value = azurerm_resource_group.rg.name
+  value = data.azurerm_resource_group.rg.name
 }
 
 output "client_key" {
@@ -47,14 +47,6 @@ output "kube_config" {
 output "host" {
   value     = azurerm_kubernetes_cluster.k8s.kube_config.0.host
   sensitive = true
-}
-
-output "identity_resource_id" {
-  value = azurerm_user_assigned_identity.app-gw-id.id
-}
-
-output "identity_client_id" {
-  value = azurerm_user_assigned_identity.app-gw-id.client_id
 }
 
 output "application_ip_address" {
