@@ -14,12 +14,16 @@
 
 ## Modules
 
-No modules.
+| Name | Source | Version |
+|------|--------|---------|
+| <a name="module_naming"></a> [naming](#module\_naming) | Azure/naming/azurerm | n/a |
+| <a name="module_naming_gtw"></a> [naming\_gtw](#module\_naming\_gtw) | Azure/naming/azurerm | n/a |
 
 ## Resources
 
 | Name | Type |
 |------|------|
+| [azurerm_resource_group.gtw_rg](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/resource_group) | resource |
 | [azurerm_resource_group.rg](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/resource_group) | resource |
 | [azurerm_role_assignment.app-gw-id-Contributor-app-gw](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/role_assignment) | resource |
 | [azurerm_role_assignment.app-gw-id-Reader](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/role_assignment) | resource |
@@ -36,16 +40,13 @@ No modules.
 | <a name="input_aks_service_principal_client_secret"></a> [aks\_service\_principal\_client\_secret](#input\_aks\_service\_principal\_client\_secret) | Secret of the service principal. Used by AKS to manage Azure. | `any` | n/a | yes |
 | <a name="input_aks_service_principal_object_id"></a> [aks\_service\_principal\_object\_id](#input\_aks\_service\_principal\_object\_id) | Object ID of the service principal. | `any` | n/a | yes |
 | <a name="input_location"></a> [location](#input\_location) | n/a | `string` | `"eastus"` | no |
-| <a name="input_resource_group_name"></a> [resource\_group\_name](#input\_resource\_group\_name) | n/a | `string` | `"rg-app-gw-demo"` | no |
 | <a name="input_tags"></a> [tags](#input\_tags) | n/a | `map` | <pre>{<br>  "environment": "demo"<br>}</pre> | no |
 
 ## Outputs
 
-| Name | Description |
-|------|-------------|
-| <a name="output_client_id"></a> [client\_id](#output\_client\_id) | n/a |
-| <a name="output_identity_client_id"></a> [identity\_client\_id](#output\_identity\_client\_id) | n/a |
-| <a name="output_identity_resource_id"></a> [identity\_resource\_id](#output\_identity\_resource\_id) | n/a |
-| <a name="output_resource_group_name"></a> [resource\_group\_name](#output\_resource\_group\_name) | n/a |
-| <a name="output_subscription_id"></a> [subscription\_id](#output\_subscription\_id) | n/a |
+| Name | Description | Value | Sensitive |
+|------|-------------|-------|:---------:|
+| <a name="output_app_gateway_identity_name"></a> [app\_gateway\_identity\_name](#output\_app\_gateway\_identity\_name) | n/a | `"iam-uai-demo"` | no |
+| <a name="output_gateway_resource_group_name"></a> [gateway\_resource\_group\_name](#output\_gateway\_resource\_group\_name) | n/a | `"gtw-rg-demo"` | no |
+| <a name="output_resource_group_name"></a> [resource\_group\_name](#output\_resource\_group\_name) | n/a | `"iam-rg-demo"` | no |
 <!-- END_TF_DOCS -->
