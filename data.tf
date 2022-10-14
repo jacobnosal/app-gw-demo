@@ -18,8 +18,12 @@ data "azurerm_resource_group" "rg" {
   name     = var.resource_group_name
 }
 
+data "azurerm_resource_group" "iam_rg" {
+  name     = var.managed_identity_resource_group_name
+}
+
 # User Assigned Identities 
 data "azurerm_user_assigned_identity" "app-gw-id" {
-  resource_group_name = data.azurerm_resource_group.rg.name
+  resource_group_name = data.azurerm_resource_group.iam_rg.name
   name                = var.managed_identity_name
 }

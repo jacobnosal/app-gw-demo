@@ -23,7 +23,7 @@ variable "location" {
 }
 
 variable "resource_group_name" {
-  default = "rg-app-gw-demo"
+  default = "gtw-rg-demo"
 }
 
 variable "tags" {
@@ -46,7 +46,11 @@ variable "aks_service_principal_object_id" {
 
 variable "managed_identity_name" {
   description = "Name of the managed identity."
-  default     = "ApplicationGatewayIdentity"
+  default     = "iam-uai-demo"
+}
+
+variable "managed_identity_resource_group_name" {
+  default = "iam-rg-demo"
 }
 
 variable "virtual_network_name" {

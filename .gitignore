@@ -8,3 +8,4 @@
 **/.vscode
 agic/clusterissuer.yaml
 agic/values.yaml
+**/output_values.json
