@@ -88,3 +88,11 @@ output "app_a_waf_policy_resource_id" {
 output "app_b_waf_policy_resource_id" {
   value = module.waf-policies.app_b_waf_policy_id
 }
+
+output "identity_resource_id" {
+  value = data.azurerm_user_assigned_identity.app-gw-id.id
+}
+
+output "identity_client_id" {
+  value = data.azurerm_user_assigned_identity.app-gw-id.client_id
+}
