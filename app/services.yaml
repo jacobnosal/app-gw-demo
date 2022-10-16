@@ -26,8 +26,7 @@ metadata:
     appgw.ingress.kubernetes.io/rewrite-rule-set: app-b-rewrite-rule-set
     appgw.ingress.kubernetes.io/backend-hostname: api.jacobnosal.com
     appgw.ingress.kubernetes.io/ssl-redirect: "true"
-    appgw.ingress.kubernetes.io/waf-policy-for-path: /subscriptions/10dc01bb-c96d-47d3-b553-338943349427/resourceGroups/rg-waf-policies/providers/Microsoft.Network/applicationGatewayWebApplicationFirewallPolicies/app-b-waf-policy
-    # https://azure.github.io/application-gateway-kubernetes-ingress/annotations/#appgw-trusted-root-certificate
+    appgw.ingress.kubernetes.io/waf-policy-for-path: /subscriptions/10dc01bb-c96d-47d3-b553-338943349427/resourceGroups/waf-rg-demo/providers/Microsoft.Network/ApplicationGatewayWebApplicationFirewallPolicies/waf-policy-demo-app-b
     # appgw.ingress.kubernetes.io/appgw-trusted-root-certificate: api.jacobnosal.com-trusted-root-cert
 spec:
   tls:
@@ -74,7 +73,7 @@ metadata:
     appgw.ingress.kubernetes.io/rewrite-rule-set: app-a-rewrite-rule-set
     appgw.ingress.kubernetes.io/backend-hostname: api.jacobnosal.com
     appgw.ingress.kubernetes.io/ssl-redirect: "true"
-    appgw.ingress.kubernetes.io/waf-policy-for-path: /subscriptions/10dc01bb-c96d-47d3-b553-338943349427/resourceGroups/rg-waf-policies/providers/Microsoft.Network/applicationGatewayWebApplicationFirewallPolicies/app-a-waf-policy
+    appgw.ingress.kubernetes.io/waf-policy-for-path: /subscriptions/10dc01bb-c96d-47d3-b553-338943349427/resourceGroups/waf-rg-demo/providers/Microsoft.Network/ApplicationGatewayWebApplicationFirewallPolicies/waf-policy-demo-app-a
     # https://azure.github.io/application-gateway-kubernetes-ingress/annotations/#appgw-trusted-root-certificate
     # appgw.ingress.kubernetes.io/appgw-trusted-root-certificate: api.jacobnosal.com-trusted-root-cert
 spec:
