@@ -12,8 +12,7 @@ build:
 .PHONY: agic
 agic:
 	set -o errexit; set -o allexport; source .env; set +o allexport; \
-	cd agic; \
-	./install.sh; \
+	./agic/install.sh; \
 	cd ..
 
 .phony: services
